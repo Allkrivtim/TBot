@@ -1,15 +1,10 @@
 from TBot.Bot import Bot
-from TBot.Types import TelegramUpdate, PollingResponse, CallbackQuery, Message
+from TBot.Types import PollingResponse
 
 class Dispatcher(Bot):
     def __init__(self, bot=Bot):
         super().__init__(bot.token)
-        self.handlers = []
-
-    def command_handler(self, func, update):
-        print(update)
-        self.handlers.append(func)
-        return func
+        self.command_handler = None
 
     async def start_polling(self):
         params = {
@@ -28,8 +23,7 @@ class Dispatcher(Bot):
                     msg = update.message
 
                     if msg.is_command:
-                        print(f"Command: {msg.command}")
-                        print(f"Args: {msg.command_args}")
+                        self.command_handler(msg)
                     else:
                         print(f"Text: {msg.text}")
 
@@ -40,5 +34,9 @@ class Dispatcher(Bot):
                     cb = update.callback_query
                     print(f"Callback: {cb.data}")
 
-
-
+    async def command_handler(self, func):
+        async def wrapper(data):
+            func.__globals__['data'] = data
+            return await func()
+        self.command_handler = wrapper
+        return func

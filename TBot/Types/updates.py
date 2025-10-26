@@ -47,7 +47,7 @@ class Message:
         self.date = message_data.get('date')
         self.text = message_data.get('text', '')
 
-        # Sender
+        #--OTHER--
         sender = message_data.get('from', {})
         self.sender_id = sender.get('id')
         self.sender_is_bot = sender.get('is_bot', False)
@@ -55,7 +55,7 @@ class Message:
         self.sender_username = sender.get('username')
         self.sender_language = sender.get('language_code', 'en')
 
-        # Chat
+        #--OTHER--
         chat = message_data.get('chat', {})
         self.chat_id = chat.get('id')
         self.chat_type = chat.get('type', 'private')
@@ -63,7 +63,7 @@ class Message:
         self.chat_username = chat.get('username')
         self.chat_first_name = chat.get('first_name')
 
-        # Дополнительные поля
+        #--OTHER--
         self.reply_to_message = message_data.get('reply_to_message')
         self.entities = message_data.get('entities', [])
         self.photo = message_data.get('photo')
@@ -81,8 +81,8 @@ class Message:
         if not self.is_command:
             return None
         # /start@botname arg1 arg2 -> start
-        cmd = self.text.split()[0][1:]  # убираем /
-        return cmd.split('@')[0]  # убираем @botname
+        cmd = self.text.split()[0][1:]
+        return cmd.split('@')[0]
 
     @property
     def command_args(self):
@@ -110,13 +110,13 @@ class CallbackQuery:
         self.id = callback_data.get('id')
         self.data = callback_data.get('data', '')
 
-        # From user
+        #--FROM_USER
         sender = callback_data.get('from', {})
         self.user_id = sender.get('id')
         self.username = sender.get('username')
         self.first_name = sender.get('first_name', '')
 
-        # Message (если есть)
+        #--CALLBACK_MESSAGE--
         self.message = callback_data.get('message')
         self.chat_id = self.message.get('chat', {}).get('id') if self.message else None
 
